@@ -6,7 +6,7 @@ WORKDIR /app
 
 # Install necessary packages
 RUN apt update && \
-    apt install -y curl jq wget libgl1-mesa-glx nano libegl1-mesa
+    apt install -y curl jq wget libgl1-mesa-glx nano libegl1-mesa openbox
 
 # Fetch API response and save it to a file
 RUN curl -s "https://api.github.com/repos/Ultimaker/Cura/releases/latest" > latest_release.json
