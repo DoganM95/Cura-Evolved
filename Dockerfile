@@ -6,7 +6,7 @@ WORKDIR /app
 
 # Install necessary packages
 RUN apt update && \
-    apt install -y curl jq wget libgl1-mesa-glx nano libegl1-mesa openbox
+    apt install -y curl jq wget libgl1-mesa-glx nano libegl1-mesa openbox x11-utils
 
 # Fetch API response and save it to a file
 RUN curl -s "https://api.github.com/repos/Ultimaker/Cura/releases/latest" > latest_release.json
@@ -28,9 +28,6 @@ RUN chmod -R 755 /app/squashfs-root/ && \
 RUN chmod +x *.AppImage && \
     ./*modern.AppImage --appimage-extract
 
-# Copy startup script
-COPY startapp.sh /startapp.sh
-
 # Create a non-root user
 RUN useradd -ms /bin/bash non-root-user
 
@@ -38,5 +35,11 @@ RUN useradd -ms /bin/bash non-root-user
 RUN chown -R non-root-user:non-root-user /config && \
     chown -R non-root-user:non-root-user /root/.local
 
-# Switch to the non-root user
-# USER non-root-user
+# Create and populate /etc/openbox/main-window-selection.xml
+# Documentation: https://github.com/jlesage/docker-baseimage-gui#maximizing-only-the-main-window
+RUN mkdir -p /etc/openbox/ && \
+    touch /etc/openbox/main-window-selection.xml && \
+    echo '<Title>UltiMaker Cura</Title>' >> /etc/openbox/main-window-selection.xml
+
+# Copy startup script
+COPY startapp.sh /startapp.sh
