@@ -35,6 +35,9 @@ RUN useradd -ms /bin/bash non-root-user
 RUN chown -R non-root-user:non-root-user /config && \
     chown -R non-root-user:non-root-user /root/.local
 
+# Set environment variables
+ENV APP_NAME="Cura"
+
 # Create and populate /etc/openbox/main-window-selection.xml
 # Documentation: https://github.com/jlesage/docker-baseimage-gui#maximizing-only-the-main-window
 RUN mkdir -p /etc/openbox/ && \

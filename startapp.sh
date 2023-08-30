@@ -1,12 +1,12 @@
 #!/bin/sh
 
-# Start Openbox
+# Start openbox
 openbox &
 
-# Run obxprop after a delay (let's say 10 seconds to allow the window to open)
+# Run obxprop after a delay
 (
   sleep 10
-  obxprop > /tmp/obxprop_output.txt
+#   obxprop > /tmp/obxprop_output.txt # Debugging step, to get an window's properties with crosshair
 ) &
 
 # Execute the AppRun from the extracted AppImage directory
