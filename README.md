@@ -12,3 +12,16 @@ The initial motivation to create this project was cura's incompetence in persist
 - Docker build command automatically gets the latest version available from cura github releases
 - Web UI available under [localhost:5800](http://localhost:5800) with any browser
 - VNC remote connection available under [localhost:5900](http://localhost:5900)
+
+## Resources
+- https://github.com/Ultimaker/Uranium/wiki/Plugin-Types
+- https://github.com/Ultimaker/Uranium/wiki/Plugins
+- https://community.ultimaker.com/forum/171-software-plug-ins/
+- https://community.ultimaker.com/topic/22243-automatic-slicing/
+- https://community.ultimaker.com/topic/30005-plugins-howto/
+- https://github.com/Ultimaker/UraniumExampleFileReaderPlugin/blob/master/plugin.json
+- https://github.com/Ghostkeeper/SettingsGuide
+- https://community.ultimaker.com/topic/26046-writing-a-custom-cura-package/
+- https://contribute.ultimaker.com/app/developer/plugins/
+- https://community.ultimaker.com/topic/20147-manual-for-developing-cura-plugins/
+- https://github.com/Ultimaker/Cura/blob/main/resources/images/cura-icon.png
