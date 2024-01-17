@@ -18,6 +18,26 @@ The initial motivation to create this project was cura's incompetence in persist
 - Web UI available under [localhost:5800](http://localhost:5800) with any browser
 - VNC remote connection available under [localhost:5900](http://localhost:5900)
 
+## Setup
+
+### Build the image
+
+`docker docker build -t doganm95/cura-evlolved . `
+
+### Start the container
+
+```shell
+docker run \ 
+  -d \
+  -p 5800:5800 \
+  -p 5900:5900 \
+  -v <desired_data_folder>:/config/xdg/data" \
+  -v "<desired_config_folder>:/config/xdg/config" \
+  -v "<desired_stl_input_folder>:/app/input" \
+  -v "<desired_gcode_output_folder>:/app/output" \
+  doganm95/cura-evlolved
+```
+
 ## Resources
 
 - https://github.com/Ultimaker/Uranium/wiki/Plugin-Types
