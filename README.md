@@ -29,7 +29,7 @@ docker run \
   --name doganm95-cura-evolved \
   -p 5800:5800 \
   -p 5900:5900 \
-  -v <desired_data_folder>:/config/xdg/data" \
+  -v "<desired_data_folder>:/config/xdg/data" \
   -v "<desired_config_folder>:/config/xdg/config" \
   -v "<desired_stl_input_folder>:/app/input" \
   -v "<desired_gcode_output_folder>:/app/output" \
