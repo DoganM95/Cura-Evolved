@@ -8,6 +8,10 @@ WORKDIR /app
 RUN apt update --fix-missing && \
     apt install -y curl jq wget libgl1-mesa-glx nano libegl1-mesa openbox dbus-x11
 
+# Generate and install favicon
+# RUN install_app_icon.sh "https://github.com/DoganM95/Cura-Evolved/blob/master/assets/Icon5.png"
+COPY ./assets/favicon_package_v0.16/* /opt/noVNC/app/images/icons
+
 # Fetch API response and save it to a file
 RUN touch latest_release.json
 RUN curl -s "https://api.github.com/repos/Ultimaker/Cura/releases/latest" > latest_release.json
