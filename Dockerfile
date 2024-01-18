@@ -9,13 +9,16 @@ RUN apt update --fix-missing && \
     apt install -y curl jq wget libgl1-mesa-glx nano libegl1-mesa openbox dbus-x11
 
 # Fetch API response and save it to a file
+RUN touch latest_release.json
 RUN curl -s "https://api.github.com/repos/Ultimaker/Cura/releases/latest" > latest_release.json
 
 # Extract the download URL and save it to a file
-RUN cat latest_release.json | jq -r '.assets[] | select(.name | test("-linux-modern.AppImage")) | .browser_download_url' > download_url.txt
+RUN touch download_url.txt
+RUN cat latest_release.json | jq -r '.assets[] | select(.name | test("-linux-X64.AppImage")) | .browser_download_url' | grep '\.AppImage$' > download_url.txt
 
-# Overwrite download_url with a custom url
-# RUN echo "https://storage.googleapis.com/software.ultimaker.com/cura_nightlies/UltiMaker-Cura-5.4.0-alpha%2Bcura_10389_148-linux-modern.AppImage" > download_url.txt
+# Extract the current cura version into env var
+RUN touch current_cura_version.txt
+RUN cat latest_release.json | jq -r '.tag_name' > current_cura_version.txt
 
 # Download the AppImage
 RUN wget $(cat download_url.txt)
@@ -27,10 +30,9 @@ RUN mkdir -p /app/squashfs-root/ /root/.local /config
 RUN chmod -R 755 /app/squashfs-root/ && \
     chmod -R 777 /root/.local
 
-
 # Extract the AppImage
 RUN chmod +x *.AppImage && \
-    ./*modern.AppImage --appimage-extract
+    ./*linux-X64.AppImage --appimage-extract
 
 # Create a non-root user
 RUN useradd -ms /bin/bash non-root-user
@@ -48,9 +50,9 @@ RUN mkdir -p /etc/openbox/ && \
     touch /etc/openbox/main-window-selection.xml && \
     echo '<Title>UltiMaker Cura</Title>' >> /etc/openbox/main-window-selection.xml
 
-RUN mkdir -p /app/input && \
-    mkdir -p /app/output && \
-    chmod -R 777 /app
+RUN mkdir -p /app/input 
+RUN mkdir -p /app/output
+RUN chmod -R 777 /app
 
 # Copy startup script
-COPY startapp.sh /startapp.sh
+COPY ./startapp.sh /startapp.sh
