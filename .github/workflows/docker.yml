@@ -24,18 +24,22 @@ jobs:
           latest_release=$(curl -s https://api.github.com/repos/Ultimaker/Cura/releases/latest | jq -r '.tag_name')
           echo "Latest release: $latest_release"
       
-      - name: Compare versions and update if needed
-        if: github.event_name == 'schedule'
-        run: |
-          if [[ "$latest_release" > "$CURRENT_CURA_VERSION" ]]; then
-            echo "$latest_release" > current_cura_version
-            git config --global user.name 'GitHub Actions'
-            git config --global user.email 'actions@github.com'
-            git add current_cura_version
-            git commit -m "Update Ultimaker Cura version to $latest_release"
-            git push
-            echo "cura_version=$latest_release" >> $GITHUB_ENV
-          fi
+          - name: Compare versions and update if needed
+          if: github.event_name == 'schedule'
+          run: |
+            current_cura_version=$(cat current_cura_version)
+            latest_release=$(curl -s https://api.github.com/repos/Ultimaker/Cura/releases/latest | jq -r '.tag_name')
+            
+            if [ "$(printf '%s\n' "$latest_release" "$current_cura_version" | sort -V | tail -n1)" = "$latest_release" ]; then
+              if [ "$latest_release" != "$current_cura_version" ]; then
+                echo "$latest_release" > current_cura_version
+                git config --global user.name 'GitHub Actions'
+                git config --global user.email 'actions@github.com'
+                git add current_cura_version
+                git commit -m "Update Ultimaker Cura version to $latest_release"
+                git push
+              fi
+            fi
 
       - name: Set Cura version output
         id: get_version
