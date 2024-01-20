@@ -42,6 +42,11 @@ jobs:
             echo "::set-output name=update_needed::false"
           fi
 
+      - name: Force update on manual push
+        if: github.event_name == 'push'
+        id: set_update_needed
+        run: echo "::set-output name=update_needed::true"
+
   build-and-push-image:
     name: Build and push docker image to ghcr.io
     needs: check-new-release
@@ -51,26 +56,26 @@ jobs:
       packages: write
       contents: read
     steps:
-      - name: Check out the repo
-        uses: actions/checkout@v2
-      
-      - name: Log in to the container registry
-        uses: docker/login-action@v1
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      
-      - name: Build and push docker images
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          push: true
-          tags: |
-            ghcr.io/doganm95/cura-evolved:${{ needs.check-new-release.outputs.cura_version }}
-            ghcr.io/doganm95/cura-evolved:${{ github.sha }}
-            ghcr.io/doganm95/cura-evolved:latest
-          labels: |
-            org.opencontainers.image.source=${{ github.repository_url }}
-            org.opencontainers.image.revision=${{ github.sha }}
-            org.opencontainers.image.version=${{ needs.check-new-release.outputs.cura_version }}
+    - name: Check out the repo
+      uses: actions/checkout@v2
+    
+    - name: Log in to the container registry
+      uses: docker/login-action@v1
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Build and push docker images
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        push: true
+        tags: |
+          ghcr.io/doganm95/cura-evolved:${{ needs.check-new-release.outputs.cura_version }}
+          ghcr.io/doganm95/cura-evolved:${{ github.sha }}
+          ghcr.io/doganm95/cura-evolved:latest
+        labels: |
+          org.opencontainers.image.source=${{ github.repository_url }}
+          org.opencontainers.image.revision=${{ github.sha }}
+          org.opencontainers.image.version=${{ needs.check-new-release.outputs.cura_version }}
