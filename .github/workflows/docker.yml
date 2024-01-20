@@ -9,52 +9,49 @@ jobs:
   check-new-release:
     runs-on: ubuntu-latest
     outputs:
-      cura_version: ${{ steps.latest_version.outputs.LATEST_VERSION }}
-      update_needed: ${{ steps.set_update_needed.outputs.update_needed }}
+      cura_version: ${{ steps.get_version.outputs.cura_version }}
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
       
+      - name: Read current Ultimaker Cura version from file
+        id: read_version
+        run: echo "CURRENT_CURA_VERSION=$(cat current_cura_version)" >> $GITHUB_ENV
+
       - name: Get latest Ultimaker Cura release tag
-        id: latest_version
+        id: get_latest_version
         run: |
           latest_release=$(curl -s https://api.github.com/repos/Ultimaker/Cura/releases/latest | jq -r '.tag_name')
           echo "Latest release: $latest_release"
-          echo "LATEST_VERSION=$latest_release" >> $GITHUB_ENV
       
-      - name: Compare versions and determine if an update is needed
+      - name: Compare versions and update if needed
         if: github.event_name == 'schedule'
-        id: compare_versions
         run: |
-          current_cura_version=$(cat current_cura_version)
-          if [[ "$latest_release" > "$current_cura_version" ]]; then
-            echo "New Ultimaker Cura version available: $latest_release"
+          if [[ "$latest_release" > "$CURRENT_CURA_VERSION" ]]; then
             echo "$latest_release" > current_cura_version
             git config --global user.name 'GitHub Actions'
             git config --global user.email 'actions@github.com'
             git add current_cura_version
             git commit -m "Update Ultimaker Cura version to $latest_release"
             git push
-            echo "update_needed=true" >> $GITHUB_ENV
-          else
-            echo "Ultimaker Cura is up-to-date with version $current_cura_version"
-            echo "update_needed=false" >> $GITHUB_ENV
+            echo "cura_version=$latest_release" >> $GITHUB_ENV
           fi
-      
-      - name: Set output for update_needed
-        id: set_update_needed
+
+      - name: Set Cura version output
+        id: get_version
         run: |
           if [ "${{ github.event_name }}" == "push" ]; then
-            echo "::set-output name=update_needed::true"
+            # If the workflow is triggered by a push, use the latest release version
+            echo "::set-output name=cura_version::$latest_release"
           else
-            echo "update_needed=$(< $GITHUB_ENV)" 
-            echo "::set-output name=update_needed::$update_needed"
+            # Otherwise, use the current version from the file
+            echo "::set-output name=cura_version::$(cat current_cura_version)"
           fi
 
   build-and-push-image:
     name: Build and push docker image to ghcr.io
     needs: check-new-release
-    if: needs.check-new-release.outputs.update_needed == 'true'
+    if: github.event_name == 'push' || github.event_name == 'schedule'
     runs-on: ubuntu-latest
     permissions:
       packages: write
