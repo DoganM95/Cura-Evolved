@@ -27,27 +27,22 @@ jobs:
           echo "Latest release: $LATEST_RELEASE"
       
       - name: Compare versions and update if needed
-        if: github.event_name == 'schedule'
+        id: compare_and_update_cura
         run: |
           echo "Comparing $LATEST_RELEASE with $CURRENT_CURA_VERSION"
-          if [ "$LATEST_RELEASE" != "$CURRENT_CURA_VERSION" ]; then
-            echo "$LATEST_RELEASE" > "$CURRENT_CURA_VERSION"
+          LATEST_RELEASE_NUMBER=$(echo "$LATEST_RELEASE" | tr -d '.')
+          CURRENT_CURA_VERSION_NUMBER=$(echo "$CURRENT_CURA_VERSION" | tr -d '.')
+          if [ "$LATEST_RELEASE_NUMBER" -gt "$CURRENT_CURA_VERSION_NUMBER" ]; then
+            echo "$LATEST_RELEASE_NUMBER" > "$CURRENT_CURA_VERSION_NUMBER"
             git config --global user.name 'DoganM95'
             git config --global user.email 'actions@github.com'
             git add current_cura_version
             git commit -m "Update Cura to $LATEST_RELEASE"
-            git push
-          fi
-        
-      - name: Set Cura version output
-        id: get_version
-        run: |
-          if [ "${{ github.event_name }}" == "push" ]; then
-            # If the workflow is triggered by a push, use the latest release version
-            echo "::set-output name=cura_version::$LATEST_RELEASE"
+            git push 
+            echo "cura_version=$LATEST_RELEASE" >> $GITHUB_OUTPUT
           else
-            # Otherwise, use the current version from the file
-            echo "::set-output name=cura_version::$(cat current_cura_version)"
+            echo "$LATEST_RELEASE_NUMBER" = "$CURRENT_CURA_VERSION_NUMBER"
+            exit 1
           fi
 
   build-and-push-image:
