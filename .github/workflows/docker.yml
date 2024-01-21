@@ -29,8 +29,9 @@ jobs:
       - name: Compare versions and update if needed
         if: github.event_name == 'schedule'
         run: |
-          if [ "LATEST_RELEASE" != "$current_cura_version" ]; then
-            echo "$LATEST_RELEASE" > current_cura_version
+          echo "Comparing $LATEST_RELEASE with $CURRENT_CURA_VERSION"
+          if [ "$LATEST_RELEASE" != "$CURRENT_CURA_VERSION" ]; then
+            echo "$LATEST_RELEASE" > "$CURRENT_CURA_VERSION"
             git config --global user.name 'DoganM95'
             git config --global user.email 'actions@github.com'
             git add current_cura_version
