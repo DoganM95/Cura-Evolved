@@ -11,43 +11,39 @@ jobs:
     outputs:
       cura_version: ${{ steps.get_version.outputs.cura_version }}
     steps:
-      - name: Check out the repo
+      - name: check_out_repo
         uses: actions/checkout@v2
       
-      - name: Read current Ultimaker Cura version from file
+      - name: Read current Cura version from file
         id: read_version
-        run: echo "CURRENT_CURA_VERSION=$(cat current_cura_version)" >> $GITHUB_ENV
+        run: |
+          CURRENT_CURA_VERSION=$(cat current_cura_version)
+          echo "Current version: $CURRENT_CURA_VERSION"
 
-      - name: Get latest Ultimaker Cura release tag
+      - name: Get latest Cura release tag
         id: get_latest_version
         run: |
-          latest_release=$(curl -s https://api.github.com/repos/Ultimaker/Cura/releases/latest | jq -r '.tag_name')
-          echo "Latest release: $latest_release"
+          LATEST_RELEASE=$(curl -s https://api.github.com/repos/Ultimaker/Cura/releases/latest | jq -r '.tag_name')
+          echo "Latest release: $LATEST_RELEASE"
       
       - name: Compare versions and update if needed
         if: github.event_name == 'schedule'
         run: |
-          current_cura_version=$(cat current_cura_version)
-          latest_release=$(curl -s https://api.github.com/repos/Ultimaker/Cura/releases/latest | jq -r '.tag_name')
-          echo "Latest release: $latest_release"
-      
-          higher_version=$(printf '%s\n' "$latest_release" "$current_cura_version" | sort -V | tail -n1)
-          if [ "$higher_version" = "$latest_release" ] && [ "$latest_release" != "$current_cura_version" ]; then
-            echo "$latest_release" > current_cura_version
-            git config --global user.name 'GitHub Actions'
+          if [ "LATEST_RELEASE" != "$current_cura_version" ]; then
+            echo "$LATEST_RELEASE" > current_cura_version
+            git config --global user.name 'DoganM95'
             git config --global user.email 'actions@github.com'
             git add current_cura_version
-            git commit -m "Update Ultimaker Cura version to $latest_release"
+            git commit -m "Update Cura to $LATEST_RELEASE"
             git push
           fi
         
-
       - name: Set Cura version output
         id: get_version
         run: |
           if [ "${{ github.event_name }}" == "push" ]; then
             # If the workflow is triggered by a push, use the latest release version
-            echo "::set-output name=cura_version::$latest_release"
+            echo "::set-output name=cura_version::$LATEST_RELEASE"
           else
             # Otherwise, use the current version from the file
             echo "::set-output name=cura_version::$(cat current_cura_version)"
