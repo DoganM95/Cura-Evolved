@@ -61,5 +61,8 @@ RUN chmod -R 777 /app
 # Copy startup script
 COPY ./startapp.sh /startapp.sh
 
+# Fix script permissions
+RUN chmod -R 777 /startapp.sh
+
 # Replace CRLF with LF in shartscript
 RUN sed -i 's/\r$//' /startapp.sh
