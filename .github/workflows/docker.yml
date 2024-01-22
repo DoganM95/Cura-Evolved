@@ -18,19 +18,25 @@ jobs:
         id: read_version
         run: |
           CURRENT_CURA_VERSION=$(cat current_cura_version)
+          echo "CURRENT_CURA_VERSION=$CURRENT_CURA_VERSION" >> $GITHUB_ENV
           echo "Current version: $CURRENT_CURA_VERSION"
 
       - name: Get latest Cura release tag
         id: get_latest_version
         run: |
           LATEST_RELEASE=$(curl -s https://api.github.com/repos/Ultimaker/Cura/releases/latest | jq -r '.tag_name')
+          echo "LATEST_RELEASE=$LATEST_RELEASE" >> $GITHUB_ENV
           echo "Latest release: $LATEST_RELEASE"
       
       - name: Compare versions and update if needed
         id: compare_and_update_cura
         run: |
           LATEST_RELEASE_NUMBER=$(echo "$LATEST_RELEASE" | tr -d '.')
+          echo "LATEST_RELEASE_NUMBER=$LATEST_RELEASE_NUMBER" >> $GITHUB_ENV
+          
           CURRENT_CURA_VERSION_NUMBER=$(echo "$CURRENT_CURA_VERSION" | tr -d '.')
+          echo "CURRENT_CURA_VERSION_NUMBER=$CURRENT_CURA_VERSION_NUMBER" >> $GITHUB_ENV
+          
           echo "Comparing $LATEST_RELEASE_NUMBER with $CURRENT_CURA_VERSION_NUMBER"
           # Check if the variables are empty
           if [ -z "$LATEST_RELEASE_NUMBER" ] || [ -z "$CURRENT_CURA_VERSION_NUMBER" ]; then
