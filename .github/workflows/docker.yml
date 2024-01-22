@@ -12,7 +12,9 @@ jobs:
       cura_version: ${{ steps.get_version.outputs.cura_version }}
     steps:
       - name: check_out_repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Read current Cura version from file
         id: read_version
