@@ -72,6 +72,11 @@ jobs:
       packages: write
       contents: read
     steps:
+      - name: Check previous jobs output
+        run: |
+          echo "latest_release: $LATEST_RELEASE"
+          echo "$needs.check-new-release.outputs.cura_version: ${{ needs.check-new-release.outputs.cura_version }}"
+    
       - name: Check out the repo
         uses: actions/checkout@v4
       
@@ -88,6 +93,7 @@ jobs:
           context: .
           push: true
           tags: |
+            ghcr.io/doganm95/cura-evolved:${{ needs.check-new-release.outputs.cura_version }}
             ghcr.io/doganm95/cura-evolved:${{ github.sha }}
             ghcr.io/doganm95/cura-evolved:latest
           labels: |
