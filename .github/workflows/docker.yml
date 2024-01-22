@@ -52,7 +52,7 @@ jobs:
             git add current_cura_version
             git commit -m "Update Cura to $LATEST_RELEASE"
             git push 
-            echo "cura_version=$LATEST_RELEASE" >> $GITHUB_OUTPUT
+            echo "cura_version=$LATEST_RELEASE" >> $GITHUB_OUTPUT            echo "cura_version=$LATEST_RELEASE" >> $GITHUB_ENV
           fi          
 
       - name: Check on schedule
