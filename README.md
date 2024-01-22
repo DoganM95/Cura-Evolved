@@ -50,6 +50,11 @@ docker run `
   ghcr.io/doganm95/cura-evolved:latest
 ```
 
+## Versioning
+
+The docker images are versioned by Cura's current tag, e.g. `5.6.0` followed by the current workflow run, which increases by 1, every time a change in the code happens.
+Thus, the version `5.6.0-213` indicates, that the image runs cura `5.6.0` with repository/code changes of run `213`.
+
 ## Resources
 
 - https://github.com/Ultimaker/Uranium/wiki/Plugin-Types
