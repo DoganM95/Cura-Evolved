@@ -28,20 +28,32 @@ jobs:
       
       - name: Compare versions and update if needed
         id: compare_and_update_cura
+        if: github.event_name == 'schedule'
         run: |
           LATEST_RELEASE_NUMBER=$(echo "$LATEST_RELEASE" | tr -d '.')
           CURRENT_CURA_VERSION_NUMBER=$(echo "$CURRENT_CURA_VERSION" | tr -d '.')
           echo "Comparing $LATEST_RELEASE_NUMBER with $CURRENT_CURA_VERSION_NUMBER"
+          # Check if the variables are empty
+          if [ -z "$LATEST_RELEASE_NUMBER" ] || [ -z "$CURRENT_CURA_VERSION_NUMBER" ]; then
+            echo "One or both version numbers are empty."
+            exit 1
+          fi
           if [ "$LATEST_RELEASE_NUMBER" -gt "$CURRENT_CURA_VERSION_NUMBER" ]; then
-            echo "$LATEST_RELEASE_NUMBER" > "$CURRENT_CURA_VERSION_NUMBER"
+            echo "$LATEST_RELEASE" > current_cura_version
             git config --global user.name 'DoganM95'
             git config --global user.email 'actions@github.com'
             git add current_cura_version
             git commit -m "Update Cura to $LATEST_RELEASE"
             git push 
             echo "cura_version=$LATEST_RELEASE" >> $GITHUB_OUTPUT
-          else
-            echo "$LATEST_RELEASE_NUMBER = $CURRENT_CURA_VERSION_NUMBER"
+          fi          
+
+      - name: Check on schedule
+        id: check_on_schedule
+        if: github.event_name == 'schedule'
+        run: |
+          if [ ! "$LATEST_RELEASE_NUMBER" -gt "$CURRENT_CURA_VERSION_NUMBER" ]; then
+            echo "$LATEST_RELEASE_NUMBER <= $CURRENT_CURA_VERSION_NUMBER, skipping update."
             exit 1
           fi
 
