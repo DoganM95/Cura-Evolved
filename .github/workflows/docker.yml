@@ -45,15 +45,21 @@ jobs:
             echo "One or both version numbers are empty."
             exit 1
           fi
+          echo "Debug: LATEST_RELEASE_NUMBER=$LATEST_RELEASE_NUMBER, CURRENT_CURA_VERSION_NUMBER=$CURRENT_CURA_VERSION_NUMBER"
           if [ "$LATEST_RELEASE_NUMBER" -gt "$CURRENT_CURA_VERSION_NUMBER" ]; then
+            echo "Updating to new version: $LATEST_RELEASE"
             echo "$LATEST_RELEASE" > current_cura_version
             git config --global user.name 'actions-user'
             git config --global user.email 'actions@github.com'
             git add current_cura_version
             git commit -m "Update Cura to $LATEST_RELEASE"
             git push 
-            echo "cura_version=$LATEST_RELEASE" >> $GITHUB_OUTPUT            echo "cura_version=$LATEST_RELEASE" >> $GITHUB_ENV
-          fi          
+            echo "cura_version=$LATEST_RELEASE" >> $GITHUB_OUTPUT
+          else
+            echo "No new version to update. Current version is up to date."
+            # Set the output even if the condition is not met
+            echo "cura_version=$CURRENT_CURA_VERSION" >> $GITHUB_OUTPUT
+          fi
 
       - name: Check on schedule
         id: check_on_schedule
