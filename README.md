@@ -52,19 +52,5 @@ docker run `
 
 ## Versioning
 
-The docker images are versioned by Cura's current tag, e.g. `5.6.0` followed by the current workflow run, which increases by 1, every time a change in the code happens.
-Thus, the version `5.6.0-213` indicates, that the image runs cura `5.6.0` with repository/code changes of run `213`.
-
-## Resources
-
-- https://github.com/Ultimaker/Uranium/wiki/Plugin-Types
-- https://github.com/Ultimaker/Uranium/wiki/Plugins
-- https://community.ultimaker.com/forum/171-software-plug-ins/
-- https://community.ultimaker.com/topic/22243-automatic-slicing/
-- https://community.ultimaker.com/topic/30005-plugins-howto/
-- https://github.com/Ultimaker/UraniumExampleFileReaderPlugin/blob/master/plugin.json
-- https://github.com/Ghostkeeper/SettingsGuide
-- https://community.ultimaker.com/topic/26046-writing-a-custom-cura-package/
-- https://contribute.ultimaker.com/app/developer/plugins/
-- https://community.ultimaker.com/topic/20147-manual-for-developing-cura-plugins/
-- https://github.com/Ultimaker/Cura/blob/main/resources/images/cura-icon.png
+The docker images are versioned by Cura's current tag, e.g. `5.6.0` followed by the current workflow run of this repository, which increases by 1, every time a change in the code happens.
+Thus, the version `5.6.0-213` indicates, that the image runs cura `5.6.0` with repository/code changes of run `213` made here.
