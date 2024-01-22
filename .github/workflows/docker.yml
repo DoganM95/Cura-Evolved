@@ -29,9 +29,9 @@ jobs:
       - name: Compare versions and update if needed
         id: compare_and_update_cura
         run: |
-          echo "Comparing $LATEST_RELEASE with $CURRENT_CURA_VERSION"
           LATEST_RELEASE_NUMBER=$(echo "$LATEST_RELEASE" | tr -d '.')
           CURRENT_CURA_VERSION_NUMBER=$(echo "$CURRENT_CURA_VERSION" | tr -d '.')
+          echo "Comparing $LATEST_RELEASE_NUMBER with $CURRENT_CURA_VERSION_NUMBER"
           if [ "$LATEST_RELEASE_NUMBER" -gt "$CURRENT_CURA_VERSION_NUMBER" ]; then
             echo "$LATEST_RELEASE_NUMBER" > "$CURRENT_CURA_VERSION_NUMBER"
             git config --global user.name 'DoganM95'
@@ -41,7 +41,7 @@ jobs:
             git push 
             echo "cura_version=$LATEST_RELEASE" >> $GITHUB_OUTPUT
           else
-            echo "$LATEST_RELEASE_NUMBER" = "$CURRENT_CURA_VERSION_NUMBER"
+            echo "$LATEST_RELEASE_NUMBER = $CURRENT_CURA_VERSION_NUMBER"
             exit 1
           fi
 
