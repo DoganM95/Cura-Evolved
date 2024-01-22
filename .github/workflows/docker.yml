@@ -67,29 +67,27 @@ jobs:
   build-and-push-image:
     name: Build and push docker image to ghcr.io
     needs: check-new-release
-    if: github.event_name == 'push' || github.event_name == 'schedule'
     runs-on: ubuntu-latest
     permissions:
       packages: write
       contents: read
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       
       - name: Log in to the container registry
-        uses: docker/login-action@v1
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Build and push docker images
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v5
         with:
           context: .
           push: true
           tags: |
-            ghcr.io/doganm95/cura-evolved:${{ env.LATEST_RELEASE }}
             ghcr.io/doganm95/cura-evolved:${{ github.sha }}
             ghcr.io/doganm95/cura-evolved:latest
           labels: |
