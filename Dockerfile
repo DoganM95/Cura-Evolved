@@ -58,8 +58,8 @@ RUN mkdir -p /app/input
 RUN mkdir -p /app/output
 RUN chmod -R 777 /app
 
-# Replace CRLF with LF in shartscript
-RUN sed -i 's/\r$//' ./startapp.sh
-
 # Copy startup script
 COPY ./startapp.sh /startapp.sh
+
+# Replace CRLF with LF in shartscript
+RUN sed -i 's/\r$//' /startapp.sh
