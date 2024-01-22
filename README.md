@@ -13,7 +13,7 @@ This is currently just a dockerized, usable cura application, that can be connec
 
 # Goal
 
-The goal is automating the slicing process, so files can be put in an /input folder and automatically processed versions land in an /ouput folder.
+The goal is automating the slicing process, so files can be put in an `/input` folder and automatically processed versions land in an `/ouput` folder.
 
 The GUI is there, so the user can modify all settings and install extensions to achieve more automation.  
 The initial motivation to create this project was cura's incompetence in persisting my user-settings.  
