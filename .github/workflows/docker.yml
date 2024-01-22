@@ -45,7 +45,7 @@ jobs:
           fi
           if [ "$LATEST_RELEASE_NUMBER" -gt "$CURRENT_CURA_VERSION_NUMBER" ]; then
             echo "$LATEST_RELEASE" > current_cura_version
-            git config --global user.name 'DoganM95'
+            git config --global user.name 'actions-user'
             git config --global user.email 'actions@github.com'
             git add current_cura_version
             git commit -m "Update Cura to $LATEST_RELEASE"
