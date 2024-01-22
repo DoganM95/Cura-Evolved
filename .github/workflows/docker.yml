@@ -9,7 +9,7 @@ jobs:
   check-new-release:
     runs-on: ubuntu-latest
     outputs:
-      cura_version: ${{ steps.get_version.outputs.cura_version }}
+      cura_version: ${{ steps.compare_and_update_cura.outputs.cura_version }}
     steps:
       - name: check_out_repo
         uses: actions/checkout@v3
