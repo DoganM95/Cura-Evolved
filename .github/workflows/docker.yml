@@ -28,7 +28,6 @@ jobs:
       
       - name: Compare versions and update if needed
         id: compare_and_update_cura
-        if: github.event_name == 'schedule'
         run: |
           LATEST_RELEASE_NUMBER=$(echo "$LATEST_RELEASE" | tr -d '.')
           CURRENT_CURA_VERSION_NUMBER=$(echo "$CURRENT_CURA_VERSION" | tr -d '.')
