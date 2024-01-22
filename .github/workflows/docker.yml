@@ -89,7 +89,7 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/doganm95/cura-evolved:${{ LATEST_RELEASE }}
+            ghcr.io/doganm95/cura-evolved:${{ env.LATEST_RELEASE }}
             ghcr.io/doganm95/cura-evolved:${{ github.sha }}
             ghcr.io/doganm95/cura-evolved:latest
           labels: |
