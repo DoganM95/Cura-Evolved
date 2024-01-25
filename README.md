@@ -56,3 +56,7 @@ docker run `
 
 The docker images are versioned by Cura's current tag, e.g. `5.6.0` followed by the current workflow run of this repository, which increases by 1, every time a change in the code happens.
 Thus, the version `5.6.0-213` indicates, that the image runs cura `5.6.0` with repository/code changes of run `213` made here.
+
+## Migration
+
+Having cura installed on a personal windows/linux machine, the settings and profiles should be copyable from e.g. `Appdata/Roaming/Cura/5.6/...` to the folders mounted as volumes, to carry over the existing settings to the container.
