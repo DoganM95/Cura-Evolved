@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       cura_version: ${{ steps.compare_and_update_cura.outputs.cura_version }}
+      should_continue: ${{ steps.check_on_schedule.outputs.should_continue }}
     steps:
       - name: check_out_repo
         uses: actions/checkout@v3
@@ -63,12 +64,18 @@ jobs:
             echo "cura_version=$CURRENT_CURA_VERSION" >> $GITHUB_OUTPUT
           fi
 
+      - name: Set should continue true
+        id: enable_should_continue
+        run: |
+          echo "should_continue=true" >> $GITHUB_OUTPUT
+
       - name: Check on schedule
         id: check_on_schedule
         if: github.event_name == 'schedule'
         run: |
           if [ ! "$LATEST_RELEASE_NUMBER" -gt "$CURRENT_CURA_VERSION_NUMBER" ]; then
-            echo "$LATEST_RELEASE_NUMBER <= $CURRENT_CURA_VERSION_NUMBER, skipping update."
+            echo "Set should_continue to false"
+            echo "should_continue=false" >> $GITHUB_OUTPUT
             exit 0
           fi
 
