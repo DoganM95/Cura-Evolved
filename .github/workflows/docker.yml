@@ -82,6 +82,7 @@ jobs:
   build-and-push-image:
     name: Build and push docker image to ghcr.io
     needs: check-new-release
+    if: needs.check-new-release.outputs.should_continue == 'true'
     runs-on: ubuntu-latest
     permissions:
       packages: write
