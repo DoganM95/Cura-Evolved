@@ -64,20 +64,16 @@ jobs:
             echo "cura_version=$CURRENT_CURA_VERSION" >> $GITHUB_OUTPUT
           fi
 
-      - name: Set should continue true
-        id: enable_should_continue
+      - name: Set should continue
+        id: set_should_continue
         run: |
-          echo "should_continue=true" >> $GITHUB_OUTPUT
-
-      - name: Check on schedule
-        id: check_on_schedule
-        if: github.event_name == 'schedule'
-        run: |
-          if [ ! "$LATEST_RELEASE_NUMBER" -gt "$CURRENT_CURA_VERSION_NUMBER" ]; then
-            echo "Set should_continue to false"
-            echo "should_continue=false" >> $GITHUB_OUTPUT
-            exit 0
+          SHOULD_CONTINUE="true"
+          if [ "${{ github.event_name }}" == "schedule" ]; then
+            if [ ! "$LATEST_RELEASE_NUMBER" -gt "$CURRENT_CURA_VERSION_NUMBER" ]; then
+              SHOULD_CONTINUE="false"
+            fi
           fi
+          echo "should_continue=$SHOULD_CONTINUE" >> $GITHUB_OUTPUT
 
   build-and-push-image:
     name: Build and push docker image to ghcr.io
