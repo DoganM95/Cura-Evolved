@@ -34,7 +34,7 @@ docker run \
   -v "<desired_data_folder>:/config/xdg/data" \
   -v "<desired_config_folder>:/config/xdg/config" \
   -v "<desired_stl_input_folder>:/app/input" \
-  -v "<desired_gcode_output_folder>:/app/output" \
+  -v "<desired_gcode_output_folder>:/app/output:rw" \
   ghcr.io/doganm95/cura-evolved:latest
 ```
 ### WIndows
@@ -48,7 +48,7 @@ docker run `
   -v "<desired_data_folder>:/config/xdg/data" `
   -v "<desired_config_folder>:/config/xdg/config" `
   -v "<desired_stl_input_folder>:/app/input" `
-  -v "<desired_gcode_output_folder>:/app/output" `
+  -v "<desired_gcode_output_folder>:/app/output:rw" `
   ghcr.io/doganm95/cura-evolved:latest
 ```
 
