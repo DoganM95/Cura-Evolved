@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       cura_version: ${{ steps.compare_and_update_cura.outputs.cura_version }}
-      should_continue: ${{ steps.check_on_schedule.outputs.should_continue }}
+      should_continue: ${{ steps.set_should_continue.outputs.should_continue }}
     steps:
       - name: check_out_repo
         uses: actions/checkout@v3
