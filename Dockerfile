@@ -27,7 +27,7 @@ COPY ./assets/favicon_package_v0.16/* /opt/noVNC/app/images/icons
 # RUN cat latest_release.json | jq -r '.tag_name' > current_cura_version.txt
 
 # Turn CRLF file into LF
-RUN dos2unix download_url
+RUN sed -i 's/\r$//' download_url
 
 # Download the AppImage
 RUN wget $(cat download_url)
