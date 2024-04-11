@@ -1,84 +1,39 @@
-name: Publish Docker image
+name: Publish stable docker image
 
 on:
   push:
     paths-ignore:
       - 'README.md'
-  schedule:
-    - cron: '0 0 * * *' # Runs at midnight every day
 
 jobs:
   check-new-release:
     runs-on: ubuntu-latest
     outputs:
-      cura_version: ${{ steps.compare_and_update_cura.outputs.cura_version }}
-      should_continue: ${{ steps.set_should_continue.outputs.should_continue }}
+      stable_release_url: ${{ steps.get_latest_stable_cura_url.outputs.stable_release_url }}
+      cura_version: ${{ steps.read_stable_version.outputs.cura_version }}
     steps:
-      - name: check_out_repo
-        uses: actions/checkout@v3
+      - name: Check out repo
+        uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-      
-      - name: Read current Cura version from file
-        id: read_version
+      - name: Read stable Cura version from file
+        id: read_stable_version
         run: |
-          CURRENT_CURA_VERSION=$(cat current_cura_version)
-          echo "CURRENT_CURA_VERSION=$CURRENT_CURA_VERSION" >> $GITHUB_ENV
-          echo "Current version: $CURRENT_CURA_VERSION"
-
-      - name: Get latest Cura release tag
-        id: get_latest_version
+          LATEST_STABLE_CURA_VERSION=$(cat latest_stable_cura_version)
+          echo "LATEST_STABLE_CURA_VERSION=$LATEST_STABLE_CURA_VERSION" >> $GITHUB_ENV
+          echo "Latest stable Cura version: $LATEST_STABLE_CURA_VERSION"
+          echo "cura_version=$LATEST_STABLE_CURA_VERSION" >> $GITHUB_OUTPUT
+      - name: Get latest stable Cura release
+        id: get_latest_stable_cura_url
         run: |
-          LATEST_RELEASE=$(curl -s https://api.github.com/repos/Ultimaker/Cura/releases/latest | jq -r '.tag_name')
-          echo "LATEST_RELEASE=$LATEST_RELEASE" >> $GITHUB_ENV
-          echo "Latest release: $LATEST_RELEASE"
-      
-      - name: Compare versions and update if needed
-        id: compare_and_update_cura
-        run: |
-          LATEST_RELEASE_NUMBER=$(echo "$LATEST_RELEASE" | tr -d '.')
-          echo "LATEST_RELEASE_NUMBER=$LATEST_RELEASE_NUMBER" >> $GITHUB_ENV
-          
-          CURRENT_CURA_VERSION_NUMBER=$(echo "$CURRENT_CURA_VERSION" | tr -d '.')
-          echo "CURRENT_CURA_VERSION_NUMBER=$CURRENT_CURA_VERSION_NUMBER" >> $GITHUB_ENV
-          
-          echo "Comparing $LATEST_RELEASE_NUMBER with $CURRENT_CURA_VERSION_NUMBER"
-          # Check if the variables are empty
-          if [ -z "$LATEST_RELEASE_NUMBER" ] || [ -z "$CURRENT_CURA_VERSION_NUMBER" ]; then
-            echo "One or both version numbers are empty."
-            exit 1
-          fi
-          echo "Debug: LATEST_RELEASE_NUMBER=$LATEST_RELEASE_NUMBER, CURRENT_CURA_VERSION_NUMBER=$CURRENT_CURA_VERSION_NUMBER"
-          if [ "$LATEST_RELEASE_NUMBER" -gt "$CURRENT_CURA_VERSION_NUMBER" ]; then
-            echo "Updating to new version: $LATEST_RELEASE"
-            echo "$LATEST_RELEASE" > current_cura_version
-            git config --global user.name 'actions-user'
-            git config --global user.email 'actions@github.com'
-            git add current_cura_version
-            git commit -m "Update Cura to $LATEST_RELEASE"
-            git push 
-            echo "cura_version=$LATEST_RELEASE" >> $GITHUB_OUTPUT
-          else
-            echo "No new version to update. Current version is up to date."
-            # Set the output even if the condition is not met
-            echo "cura_version=$CURRENT_CURA_VERSION" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Set should continue
-        id: set_should_continue
-        run: |
-          SHOULD_CONTINUE="true"
-          if [ "${{ github.event_name }}" == "schedule" ]; then
-            if [ ! "$LATEST_RELEASE_NUMBER" -gt "$CURRENT_CURA_VERSION_NUMBER" ]; then
-              SHOULD_CONTINUE="false"
-            fi
-          fi
-          echo "should_continue=$SHOULD_CONTINUE" >> $GITHUB_OUTPUT
+          STABLE_RELEASE_URL=$(curl -s https://api.github.com/repos/Ultimaker/Cura/releases | jq -r --arg VERSION "$LATEST_STABLE_CURA_VERSION" '.[] | select(.tag_name == $VERSION) | .assets[] | select(.name | test("X64\\.AppImage$")) | .browser_download_url')
+          echo "stable_release_url=$STABLE_RELEASE_URL" >> $GITHUB_OUTPUT
+          echo "Stable release url: $STABLE_RELEASE_URL"
+          touch download_url.txt && echo "$STABLE_RELEASE_URL" > download_url.txt
 
   build-and-push-image:
     name: Build and push docker image to ghcr.io
     needs: check-new-release
-    if: needs.check-new-release.outputs.should_continue == 'true'
     runs-on: ubuntu-latest
     permissions:
       packages: write
@@ -86,19 +41,16 @@ jobs:
     steps:
       - name: Check previous jobs output
         run: |
-          echo "latest_release: $LATEST_RELEASE"
-          echo "$needs.check-new-release.outputs.cura_version: ${{ needs.check-new-release.outputs.cura_version }}"
-    
+          echo "Cura version to use: ${{ needs.check-new-release.outputs.cura_version }}"
+          echo "Cura url to use: ${{ needs.check-new-release.outputs.stable_release_url }}"
       - name: Check out the repo
         uses: actions/checkout@v4
-      
       - name: Log in to the container registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      
       - name: Build and push docker images
         uses: docker/build-push-action@v5
         with:
