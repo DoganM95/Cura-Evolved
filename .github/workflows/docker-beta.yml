@@ -1,11 +1,11 @@
 name: Publish beta docker image
 
 on:
-  push:
+  fork:
     paths-ignore:
       - 'README.md'
-  schedule:
-    - cron: '0 0 * * *' # Runs at midnight every day
+  # schedule:
+  #   - cron: '0 0 * * *' # Runs at midnight every day
 
 jobs:
   check-new-release:
