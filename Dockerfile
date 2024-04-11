@@ -12,17 +12,19 @@ RUN apt update --fix-missing && \
 # RUN install_app_icon.sh "https://github.com/DoganM95/Cura-Evolved/blob/master/assets/Icon5.png"
 COPY ./assets/favicon_package_v0.16/* /opt/noVNC/app/images/icons
 
-# Fetch API response and save it to a file
-RUN touch latest_release.json
-RUN curl -s "https://api.github.com/repos/Ultimaker/Cura/releases/latest" > latest_release.json
+# Logic to get the latest release on build; Disabled for github action compatibility
 
-# Extract the download URL and save it to a file
-RUN touch download_url.txt
-RUN cat latest_release.json | jq -r '.assets[] | select(.name | test("-linux-X64.AppImage")) | .browser_download_url' | grep '\.AppImage$' > download_url.txt
+# # Fetch API response and save it to a file
+# RUN touch latest_release.json
+# RUN curl -s "https://api.github.com/repos/Ultimaker/Cura/releases/latest" > latest_release.json
 
-# Extract the current cura version into env var
-RUN touch current_cura_version.txt
-RUN cat latest_release.json | jq -r '.tag_name' > current_cura_version.txt
+# # Extract the download URL and save it to a file
+# RUN touch download_url.txt
+# RUN cat latest_release.json | jq -r '.assets[] | select(.name | test("-linux-X64.AppImage")) | .browser_download_url' | grep '\.AppImage$' > download_url.txt
+
+# # Extract the current cura version into env var
+# RUN touch current_cura_version.txt
+# RUN cat latest_release.json | jq -r '.tag_name' > current_cura_version.txt
 
 # Download the AppImage
 RUN wget $(cat download_url.txt)
