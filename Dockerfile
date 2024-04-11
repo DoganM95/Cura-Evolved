@@ -19,15 +19,15 @@ COPY ./assets/favicon_package_v0.16/* /opt/noVNC/app/images/icons
 # RUN curl -s "https://api.github.com/repos/Ultimaker/Cura/releases/latest" > latest_release.json
 
 # # Extract the download URL and save it to a file
-# RUN touch download_url.txt
-# RUN cat latest_release.json | jq -r '.assets[] | select(.name | test("-linux-X64.AppImage")) | .browser_download_url' | grep '\.AppImage$' > download_url.txt
+# RUN touch download_url
+# RUN cat latest_release.json | jq -r '.assets[] | select(.name | test("-linux-X64.AppImage")) | .browser_download_url' | grep '\.AppImage$' > download_url
 
 # # Extract the current cura version into env var
 # RUN touch current_cura_version.txt
 # RUN cat latest_release.json | jq -r '.tag_name' > current_cura_version.txt
 
 # Download the AppImage
-RUN wget $(cat download_url.txt)
+RUN wget $(cat download_url)
 
 # Create necessary directories
 RUN mkdir -p /app/squashfs-root/ /root/.local /config
