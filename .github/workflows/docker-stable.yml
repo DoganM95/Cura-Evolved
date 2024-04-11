@@ -29,7 +29,7 @@ jobs:
           STABLE_RELEASE_URL=$(curl -s https://api.github.com/repos/Ultimaker/Cura/releases | jq -r --arg VERSION "$LATEST_STABLE_CURA_VERSION" '.[] | select(.tag_name == $VERSION) | .assets[] | select(.name | test("X64\\.AppImage$")) | .browser_download_url')
           echo "stable_release_url=$STABLE_RELEASE_URL" >> $GITHUB_OUTPUT
           echo "Stable release url: $STABLE_RELEASE_URL"
-          touch download_url.txt && echo "$STABLE_RELEASE_URL" > download_url
+          touch download_url && echo "$STABLE_RELEASE_URL" > download_url
           git config --global user.name 'actions-user'
           git config --global user.email 'actions@github.com'
           git add download_url
