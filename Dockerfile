@@ -27,7 +27,7 @@ COPY ./assets/favicon_package_v0.16/* /opt/noVNC/app/images/icons
 # RUN cat latest_release.json | jq -r '.tag_name' > current_cura_version.txt
 
 # Copy url file
-COPY ./download_url /download_url
+COPY ./download_url /app/download_url
 
 # Turn CRLF file into LF
 RUN sed -i 's/\r$//' download_url
