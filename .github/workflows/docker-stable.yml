@@ -33,8 +33,12 @@ jobs:
           git config --global user.name 'actions-user'
           git config --global user.email 'actions@github.com'
           git add download_url
-          git commit -m "Set latest stable cura to $LATEST_STABLE_CURA_VERSION"
-          git push 
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Set latest stable Cura to $LATEST_STABLE_CURA_VERSION"
+            git push
+          fi
 
   build-and-push-image:
     name: Build and push docker image to ghcr.io
