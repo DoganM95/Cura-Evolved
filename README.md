@@ -4,7 +4,6 @@ This is currently just a dockerized, usable cura application, that can be connec
 
 # Features
 
-- Docker image always contains the most recent cura version
 - Settings and extensions persist, even after an update of cura
 - Web UI available under [localhost:5800](http://localhost:5800) with any browser
 - VNC remote connection available under [localhost:5900](http://localhost:5900)
