@@ -8,9 +8,18 @@ WORKDIR /app
 ARG CURA_VERSION
 ENV CURA_VERSION=${CURA_VERSION}
 
-# Install necessary packages
+# Install necessary packages and clean up apt cache to reduce image size
 RUN apt update --fix-missing && \
-    apt install -y curl jq wget libgl1-mesa-glx nano libegl1-mesa openbox dbus-x11
+    apt install -y \
+    curl \
+    dbus-x11 \
+    jq \
+    libegl1-mesa \
+    libgl1-mesa-glx \
+    nano \
+    openbox \
+    wget && \
+    rm -rf /var/lib/apt/lists/*
 
 # Generate and install favicon
 # RUN install_app_icon.sh "https://github.com/DoganM95/Cura-Evolved/blob/master/assets/Icon5.png"
@@ -30,7 +39,7 @@ COPY ./assets/favicon_package_v0.16/* /opt/noVNC/app/images/icons
 # RUN touch current_cura_version.txt
 # RUN cat latest_release.json | jq -r '.tag_name' > current_cura_version.txt
 
-# Use the version to fetch the AppImage URL and download the file
+# Fetch the AppImage URL and download the file
 RUN curl -s "https://api.github.com/repos/Ultimaker/Cura/releases" | \
     jq -r --arg VERSION "$CURA_VERSION" '.[] | select(.tag_name == $VERSION) | .assets[] | select(.name | test("X64\\.AppImage$")) | .browser_download_url' > /app/download_url && \
     wget -i /app/download_url
@@ -47,12 +56,9 @@ RUN mkdir -p /app/squashfs-root/ /root/.local /config
 # # Download the AppImage
 # RUN wget $(cat download_url)
 
-# Create necessary directories
-RUN mkdir -p /app/squashfs-root/ /root/.local /config
-
-# Set permissions
-RUN chmod -R 755 /app/squashfs-root/ && \
-    chmod -R 777 /root/.local
+# # Set permissions
+# RUN chmod -R 755 /app/squashfs-root/ && \
+#     chmod -R 777 /root/.local
 
 # Extract the AppImage
 RUN chmod +x *.AppImage && \
@@ -74,15 +80,13 @@ RUN mkdir -p /etc/openbox/ && \
     touch /etc/openbox/main-window-selection.xml && \
     echo "<Title>UltiMaker Cura v$CURA_VERSION</Title>" >> /etc/openbox/main-window-selection.xml
 
-RUN mkdir -p /app/input 
-RUN mkdir -p /app/output
-RUN chmod -R 777 /app
+# Create input/output directories and adjust permissions
+RUN mkdir -p /app/input /app/output && \
+    chmod -R 777 /app
 
 # Copy startup script
 COPY ./startapp.sh /startapp.sh
 
-# Fix script permissions
-RUN chmod -R 777 /startapp.sh
-
-# Replace CRLF with LF in shartscript
-RUN sed -i 's/\r$//' /startapp.sh
+# Fix script permissions and replace CRLF with LF
+RUN chmod +x /startapp.sh && \
+    sed -i 's/\r$//' /startapp.sh
