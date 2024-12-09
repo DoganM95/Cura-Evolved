@@ -24,7 +24,7 @@ jobs:
         run: |
           STABLE_RELEASE_URL=$(curl -s https://api.github.com/repos/Ultimaker/Cura/releases | jq -r --arg VERSION "$vars.LATEST_STABLE_CURA_VERSION" '.[] | select(.tag_name == $VERSION) | .assets[] | select(.name | test("X64\\.AppImage$")) | .browser_download_url')
           echo "stable_release_url=$STABLE_RELEASE_URL" >> $GITHUB_OUTPUT
-          echo "Stable release url: $STABLE_RELEASE_URL"
+          echo "stable_version=$vars.LATEST_STABLE_CURA_VERSION" >> $GITHUB_OUTPUT
 
       - name: Log in to the container registry
         uses: docker/login-action@v3
@@ -38,6 +38,8 @@ jobs:
         with:
           context: .
           push: true
+          build-args: |
+            CURA_VERSION=${{ vars.LATEST_STABLE_CURA_VERSION }}
           tags: |
             ghcr.io/doganm95/cura-evolved:${{ vars.LATEST_STABLE_CURA_VERSION }}-${{ github.run_number }}
             ghcr.io/doganm95/cura-evolved:${{ github.sha }}
