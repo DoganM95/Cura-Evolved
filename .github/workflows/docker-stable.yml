@@ -1,6 +1,7 @@
 name: Publish stable docker image
 
 on:
+  workflow_dispatch:
   push:
     paths-ignore:
       - 'README.md'
