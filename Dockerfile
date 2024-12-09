@@ -4,6 +4,10 @@ FROM jlesage/baseimage-gui:ubuntu-22.04-v4.4.2
 # Set working directory
 WORKDIR /app
 
+# Accept the Cura version as a build argument
+ARG CURA_VERSION
+ENV CURA_VERSION=${CURA_VERSION}
+
 # Install necessary packages
 RUN apt update --fix-missing && \
     apt install -y curl jq wget libgl1-mesa-glx nano libegl1-mesa openbox dbus-x11
@@ -26,14 +30,22 @@ COPY ./assets/favicon_package_v0.16/* /opt/noVNC/app/images/icons
 # RUN touch current_cura_version.txt
 # RUN cat latest_release.json | jq -r '.tag_name' > current_cura_version.txt
 
-# Copy url file
-COPY ./download_url /app/download_url
+# Use the version to fetch the AppImage URL and download the file
+RUN curl -s "https://api.github.com/repos/Ultimaker/Cura/releases" | \
+    jq -r --arg VERSION "$CURA_VERSION" '.[] | select(.tag_name == $VERSION) | .assets[] | select(.name | test("X64\\.AppImage$")) | .browser_download_url' > /app/download_url && \
+    wget -i /app/download_url
 
-# Turn CRLF file into LF
-RUN sed -i 's/\r$//' download_url
+# Create necessary directories
+RUN mkdir -p /app/squashfs-root/ /root/.local /config
 
-# Download the AppImage
-RUN wget $(cat download_url)
+# # Copy url file
+# COPY ./download_url /app/download_url
+
+# # Turn CRLF file into LF
+# RUN sed -i 's/\r$//' download_url
+
+# # Download the AppImage
+# RUN wget $(cat download_url)
 
 # Create necessary directories
 RUN mkdir -p /app/squashfs-root/ /root/.local /config
@@ -60,7 +72,7 @@ ENV APP_NAME="Cura"
 # Documentation: https://github.com/jlesage/docker-baseimage-gui#maximizing-only-the-main-window
 RUN mkdir -p /etc/openbox/ && \
     touch /etc/openbox/main-window-selection.xml && \
-    echo '<Title>UltiMaker Cura</Title>' >> /etc/openbox/main-window-selection.xml
+    echo "<Title>UltiMaker Cura v$CURA_VERSION</Title>" >> /etc/openbox/main-window-selection.xml
 
 RUN mkdir -p /app/input 
 RUN mkdir -p /app/output
