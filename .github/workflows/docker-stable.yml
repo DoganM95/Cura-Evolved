@@ -22,9 +22,9 @@ jobs:
       - name: Get latest stable Cura release URL
         id: get_latest_stable_cura_url
         run: |
-          STABLE_RELEASE_URL=$(curl -s https://api.github.com/repos/Ultimaker/Cura/releases | jq -r --arg VERSION "$vars.LATEST_STABLE_CURA_VERSION" '.[] | select(.tag_name == $VERSION) | .assets[] | select(.name | test("X64\\.AppImage$")) | .browser_download_url')
+          STABLE_RELEASE_URL=$(curl -s https://api.github.com/repos/Ultimaker/Cura/releases | jq -r --arg VERSION "${{ vars.LATEST_STABLE_CURA_VERSION }}" '.[] | select(.tag_name == $VERSION) | .assets[] | select(.name | test("X64\\.AppImage$")) | .browser_download_url')
           echo "stable_release_url=$STABLE_RELEASE_URL" >> $GITHUB_OUTPUT
-          echo "stable_version=$vars.LATEST_STABLE_CURA_VERSION" >> $GITHUB_OUTPUT
+          echo "stable_version=${{ vars.LATEST_STABLE_CURA_VERSION }}" >> $GITHUB_OUTPUT
           echo "Download url: $STABLE_RELEASE_URL"
 
       - name: Log in to the container registry
