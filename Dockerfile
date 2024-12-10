@@ -48,8 +48,32 @@ RUN mkdir -p /app/squashfs-root/ /root/.local /config
 RUN chmod +x *.AppImage && \
     ./*linux-X64.AppImage --appimage-extract
 
-# Check size after extracting AppImage
-RUN echo "Size after extracting AppImage:" && du -sh /app
+# Create a non-root user
+RUN useradd -ms /bin/bash non-root-user
+
+# Change ownership for /config and /root/.local to non-root-user
+RUN chown -R non-root-user:non-root-user /config && \
+    chown -R non-root-user:non-root-user /root/.local
+
+# Set environment variables
+ENV APP_NAME="Cura"
+
+# Create and populate /etc/openbox/main-window-selection.xml
+# Documentation: https://github.com/jlesage/docker-baseimage-gui#maximizing-only-the-main-window
+RUN mkdir -p /etc/openbox/ && \
+    touch /etc/openbox/main-window-selection.xml && \
+    echo "<Title>UltiMaker Cura v$CURA_VERSION</Title>" >> /etc/openbox/main-window-selection.xml
+
+# Create input/output directories and adjust permissions
+RUN mkdir -p /app/input /app/output && \
+    chmod -R 777 /app
+
+# Copy startup script
+COPY ./startapp.sh /startapp.sh
+
+# Fix script permissions and replace CRLF with LF
+RUN chmod +x /startapp.sh && \
+    sed -i 's/\r$//' /startapp.sh
 
 
 ### GRAVEYARD
