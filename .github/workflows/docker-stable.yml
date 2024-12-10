@@ -34,17 +34,11 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build Docker image and check size at each step
-        run: |
-          docker build --progress=plain -t ghcr.io/doganm95/cura-evolved:${{ vars.LATEST_STABLE_CURA_VERSION }}-${{ github.run_number }} .
-          echo "Final image size:"
-          docker image ls ghcr.io/doganm95/cura-evolved:${{ vars.LATEST_STABLE_CURA_VERSION }}-${{ github.run_number }}
-
-      - name: Push Docker images
+      - name: Build and push docker images
         uses: docker/build-push-action@v5
         with:
-          push: true
           context: .
+          push: true
           build-args: |
             CURA_VERSION=${{ vars.LATEST_STABLE_CURA_VERSION }}
           tags: |
