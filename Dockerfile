@@ -1,5 +1,6 @@
-# Use base image
-FROM jlesage/baseimage-gui:ubuntu-22.04-v4.4.2
+# Use base image with dynamic version
+ARG BASEIMAGE_VERSION
+FROM jlesage/baseimage-gui:ubuntu-22.04-v${BASEIMAGE_VERSION}
 
 # Set working directory
 WORKDIR /app
