@@ -33,7 +33,7 @@ jobs:
           LATEST_BASEIMAGEGUI_VERSION=$(curl -s https://api.github.com/repos/jlesage/docker-baseimage-gui/releases/latest | jq -r '.tag_name' | sed 's/^v//')
           echo "latest_baseimagegui_version=$LATEST_BASEIMAGEGUI_VERSION" >> $GITHUB_OUTPUT
           echo "latest baseimagegui version: $LATEST_BASEIMAGEGUI_VERSION"
-          echo "latest stable baseimagegui version: ${{ vars.LATEST_STABLE_CURA_VERSION }}"
+          echo "latest stable baseimagegui version: ${{ vars.LATEST_STABLE_BASEIMAGEGUI_VERSION }}"
 
       - name: Log in to the container registry
         uses: docker/login-action@v3
@@ -50,7 +50,7 @@ jobs:
           build-args: |
             CURA_VERSION=${{ vars.LATEST_STABLE_CURA_VERSION }}
             BASEIMAGE_VERSION=${{ steps.get_latest_baseimagegui_version.outputs.latest_baseimagegui_version }}
-            BASEIMAGE_VERSION=${{ vars.LATEST_STABLE_CURA_VERSION }} # Overwrite with stable vaersion
+            BASEIMAGE_VERSION=${{ vars.LATEST_STABLE_BASEIMAGEGUI_VERSION }} # Overwrite with stable vaersion
           tags: |
             ghcr.io/doganm95/cura-evolved:${{ vars.LATEST_STABLE_CURA_VERSION }}-${{ github.run_number }}
             ghcr.io/doganm95/cura-evolved:${{ github.sha }}
