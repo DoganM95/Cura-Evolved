@@ -50,7 +50,7 @@ jobs:
           build-args: |
             CURA_VERSION=${{ vars.LATEST_STABLE_CURA_VERSION }}
             BASEIMAGE_VERSION=${{ steps.get_latest_baseimagegui_version.outputs.latest_baseimagegui_version }}
-            BASEIMAGE_VERSION=${{ vars.LATEST_STABLE_BASEIMAGEGUI_VERSION }} # Overwrite with stable vaersion
+            BASEIMAGE_VERSION=${{ vars.LATEST_STABLE_BASEIMAGEGUI_VERSION }}
           tags: |
             ghcr.io/doganm95/cura-evolved:${{ vars.LATEST_STABLE_CURA_VERSION }}-${{ github.run_number }}
             ghcr.io/doganm95/cura-evolved:${{ github.sha }}
