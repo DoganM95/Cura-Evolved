@@ -63,7 +63,7 @@ ENV APP_NAME="Cura"
 # Documentation: https://github.com/jlesage/docker-baseimage-gui#maximizing-only-the-main-window
 RUN mkdir -p /etc/openbox/ && \
     touch /etc/openbox/main-window-selection.xml && \
-    echo "<Title>UltiMaker Cura v$CURA_VERSION</Title>" >> /etc/openbox/main-window-selection.xml
+    echo "<Title>UltiMaker Cura</Title>" >> /etc/openbox/main-window-selection.xml
 
 # Create input/output directories and adjust permissions
 RUN mkdir -p /app/input /app/output && \
