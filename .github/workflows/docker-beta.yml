@@ -46,14 +46,14 @@ jobs:
           context: .
           push: true
           build-args: |
-            CURA_VERSION=${{ steps.get_latest_cura_url.outputs.latest_cura_version }}
+            CURA_VERSION=${{ steps.get_latest_cura_version.outputs.latest_cura_version }}
             BASEIMAGE_VERSION=${{ steps.get_latest_baseimagegui_version.outputs.latest_baseimagegui_version }}
             BASEIMAGE_VERSION=${{ vars.LATEST_STABLE_BASEIMAGEGUI_VERSION }}
           tags: |
-            ghcr.io/doganm95/cura-evolved-beta:${{ steps.get_latest_cura_url.outputs.latest_cura_version }}-${{ github.run_number }}
+            ghcr.io/doganm95/cura-evolved-beta:${{ steps.get_latest_cura_version.outputs.latest_cura_version }}-${{ github.run_number }}
             ghcr.io/doganm95/cura-evolved-beta:${{ github.sha }}
             ghcr.io/doganm95/cura-evolved-beta:latest
           labels: |
             org.opencontainers.image.source=${{ github.repository_url }}
             org.opencontainers.image.revision=${{ github.sha }}
-            org.opencontainers.image.version=${{ steps.get_latest_cura_url.outputs.latest_cura_version }}
+            org.opencontainers.image.version=${{ steps.get_latest_cura_version.outputs.latest_cura_version }}
