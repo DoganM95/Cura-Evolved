@@ -1,5 +1,5 @@
 name: Publish stable docker image
-# trigger cd again
+# trigger cd 
 on:
   workflow_dispatch:
   push:
