@@ -1,0 +1,59 @@
+name: Publish beta docker image
+# trigger cd 
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  build-and-push-image:
+    name: Build and push docker image to ghcr.io
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get latest Cura version
+        id: get_latest_cura_version
+        run: |
+          LATEST_CURA_VERSION=$(curl -s https://api.github.com/repos/Ultimaker/Cura/releases | jq -r '[.[] | select(.prerelease == false and .draft == false)][0].tag_name' | sed 's/^v//')
+          echo "latest_cura_version=$LATEST_CURA_VERSION" >> $GITHUB_OUTPUT
+          echo "Latest cura version: $LATEST_CURA_VERSION"
+
+      - name: Get latest baseimage-gui version
+        id: get_latest_baseimagegui_version
+        run: |
+          LATEST_BASEIMAGEGUI_VERSION=$(curl -s https://api.github.com/repos/jlesage/docker-baseimage-gui/releases/latest | jq -r '.tag_name' | sed 's/^v//')
+          echo "latest_baseimagegui_version=$LATEST_BASEIMAGEGUI_VERSION" >> $GITHUB_OUTPUT
+          echo "latest baseimagegui version: $LATEST_BASEIMAGEGUI_VERSION"
+          echo "latest stable baseimagegui version: ${{ vars.LATEST_STABLE_BASEIMAGEGUI_VERSION }}"
+
+      - name: Log in to the container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push docker images
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          build-args: |
+            CURA_VERSION=${{ steps.get_latest_cura_url.outputs.latest_cura_version }}
+            BASEIMAGE_VERSION=${{ steps.get_latest_baseimagegui_version.outputs.latest_baseimagegui_version }}
+            BASEIMAGE_VERSION=${{ vars.LATEST_STABLE_BASEIMAGEGUI_VERSION }}
+          tags: |
+            ghcr.io/doganm95/cura-evolved-beta:${{ steps.get_latest_cura_url.outputs.latest_cura_version }}-${{ github.run_number }}
+            ghcr.io/doganm95/cura-evolved-beta:${{ github.sha }}
+            ghcr.io/doganm95/cura-evolved-beta:latest
+          labels: |
+            org.opencontainers.image.source=${{ github.repository_url }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.version=${{ steps.get_latest_cura_url.outputs.latest_cura_version }}
